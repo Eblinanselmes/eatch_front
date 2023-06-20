@@ -8,7 +8,14 @@ import 'package:eatch/servicesAPI/get_categories.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
+import '../../../servicesAPI/getProduit.dart';
+import '../../../servicesAPI/multipart.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -20,10 +27,18 @@ import '../../../utils/palettes/palette.dart';
 import '../../../utils/size/size.dart';
 
 class ModificationProduit extends ConsumerStatefulWidget {
+  const ModificationProduit({super.key});
+
+class ModificationProduit extends ConsumerStatefulWidget {
   const ModificationProduit({
     super.key,
     required this.title,
     required this.price,
+    required this.quantity,
+    required this.sId,
+    required this.imageUrl,
+    required this.recette,
+    required this.category,
     required this.quantity,
     required this.sId,
     required this.imageUrl,
@@ -34,12 +49,21 @@ class ModificationProduit extends ConsumerStatefulWidget {
   final String title;
   final String recette;
   final String category;
+
+  final String title;
+  final String recette;
+  final String category;
   final String imageUrl;
   final String sId;
   final int price;
   final int quantity;
 
+  final String sId;
+  final int price;
+  final int quantity;
+
   @override
+  ModificationProduitState createState() => ModificationProduitState();
   ModificationProduitState createState() => ModificationProduitState();
 }
 
@@ -65,27 +89,42 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
   bool isLoading = false;
 
 /* SI UNE IMAGE EST SÉLECTIONNÉE SEL DEVIENT TRUE */
-  bool _selectFile = false;
+  bool selectFile = false;
 
 /* LE FICHIER IMAGE TELECHARGER DEPUIS LE PC */
   Uint8List? selectedImageInBytes;
-  List<int> _selectedFile = [];
+  List<int> selectedFile = [];
 
 /* LE FICHIER IMAGE TELECHARGER DEPUIS LE PC A ENVOYER SUR INTERNET */
   FilePickerResult? result;
-  final _formKey = GlobalKey<FormState>();
+  /* LE LOADING PENDANT LE TÉLÉCHARGEMENT DE L’IMAGE DE LA RECETTE */
+  bool isLoading = false;
 
-  String _produitTitle = "";
-  String _produitPrice = "";
-  String _produitQuantity = "";
-  String? _produitCategorie;
-  String? _produitRecette;
+/* SI UNE IMAGE EST SÉLECTIONNÉE SEL DEVIENT TRUE */
+  bool selectFile = false;
 
-  final FocusNode _produitPriceFocusNode = FocusNode();
+/* LE FICHIER IMAGE TELECHARGER DEPUIS LE PC */
+  Uint8List? selectedImageInBytes;
+  List<int> selectedFile = [];
+
+/* LE FICHIER IMAGE TELECHARGER DEPUIS LE PC A ENVOYER SUR INTERNET */
+  FilePickerResult? result;
+  final formKey = GlobalKey<FormState>();
+
+  String produitTitle = "";
+  String produitPrice = "";
+  String produitQuantity = "";
+  String? produitCategorie;
+  String? produitRecette;
+  String produitQuantity = "";
+  String? produitCategorie;
+  String? produitRecette;
+
+  final FocusNode produitPriceFocusNode = FocusNode();
 
   @override
   void dispose() {
-    _produitPriceFocusNode.dispose();
+    produitPriceFocusNode.dispose();
     super.dispose();
   }
 
@@ -163,7 +202,7 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
                 vertical: getProportionateScreenHeight(50),
               ),
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   children: [
                     Container(
@@ -202,10 +241,10 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
                                   Uint8List fileBytes =
                                       result!.files.single.bytes as Uint8List;
 
-                                  _selectedFile = fileBytes;
+                                  selectedFile = fileBytes;
                                   selectedImageInBytes =
                                       result!.files.first.bytes;
-                                  _selectFile = true;
+                                  selectFile = true;
                                 });
                               }
                             },
@@ -221,7 +260,7 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
-                                child: _selectFile == false
+                                child: selectFile == false
                                     ? Image.network(
                                         'http://13.39.81.126:4003${widget.imageUrl}',
                                         fit: BoxFit.fill,
@@ -245,17 +284,17 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
                             text: 'ENREGISTRER',
                             textcolor: Palette.primaryBackgroundColor,
                             onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
+                              if (formKey.currentState!.validate()) {
+                                formKey.currentState!.save();
                                 edditProduct(
                                     context,
-                                    _selectedFile,
+                                    selectedFile,
                                     result,
-                                    _produitQuantity,
-                                    _produitPrice,
-                                    _produitTitle,
-                                    _produitCategorie,
-                                    _produitRecette);
+                                    produitQuantity,
+                                    produitPrice,
+                                    produitTitle,
+                                    produitCategorie,
+                                    produitRecette);
                               } else {
                                 print("Bad");
                               }
@@ -338,7 +377,7 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
                 vertical: getProportionateScreenHeight(50),
               ),
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -374,9 +413,9 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
                               Uint8List fileBytes =
                                   result!.files.single.bytes as Uint8List;
 
-                              _selectedFile = fileBytes;
+                              selectedFile = fileBytes;
                               selectedImageInBytes = result!.files.first.bytes;
-                              _selectFile = true;
+                              selectFile = true;
                             });
                           }
                         },
@@ -392,7 +431,7 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16),
-                            child: _selectFile == false
+                            child: selectFile == false
                                 ? Image.network(
                                     'http://13.39.81.126:4003${widget.imageUrl}',
                                     fit: BoxFit.fill,
@@ -420,17 +459,26 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
                             text: 'ENREGISTRER',
                             textcolor: Palette.primaryBackgroundColor,
                             onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
+                              if (formKey.currentState!.validate()) {
+                                formKey.currentState!.save();
                                 edditProduct(
                                     context,
-                                    _selectedFile,
+                                    selectedFile,
                                     result,
-                                    _produitQuantity,
-                                    _produitPrice,
-                                    _produitTitle,
-                                    _produitCategorie,
-                                    _produitRecette);
+                                    produitQuantity,
+                                    produitPrice,
+                                    produitTitle,
+                                    produitCategorie,
+                                    produitRecette);
+                                edditProduct(
+                                    context,
+                                    selectedFile,
+                                    result,
+                                    produitQuantity,
+                                    produitPrice,
+                                    produitTitle,
+                                    produitCategorie,
+                                    produitRecette);
                               } else {
                                 print("Bad");
                               }
@@ -474,7 +522,7 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
       textCapitalization: TextCapitalization.characters,
       enableSuggestions: false,
       onEditingComplete: (() =>
-          FocusScope.of(context).requestFocus(_produitPriceFocusNode)),
+          FocusScope.of(context).requestFocus(produitPriceFocusNode)),
       keyboardType: TextInputType.name,
       validator: (value) {
         if (value!.isEmpty) {
@@ -512,14 +560,15 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
             const CustomSurffixIcon(svgIcon: "assets/icons/cauldron.svg"),
       ),
       onSaved: (value) {
-        _produitTitle = value!;
+        produitTitle = value!;
       },
     );
   }
 
   TextFormField produitpriceForm() {
     return TextFormField(
-      focusNode: _produitPriceFocusNode,
+      focusNode: produitPriceFocusNode,
+      focusNode: produitPriceFocusNode,
       initialValue: widget.price.toString(),
       textInputAction: TextInputAction.next,
       autocorrect: true,
@@ -564,7 +613,7 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
         suffixIcon: const CustomSurffixIcon(svgIcon: "assets/icons/coins.svg"),
       ),
       onSaved: (value) {
-        _produitPrice = value!;
+        produitPrice = value!;
       },
     );
   }
@@ -614,7 +663,7 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
         suffixIcon: const CustomSurffixIcon(svgIcon: "assets/icons/coins.svg"),
       ),
       onSaved: (value) {
-        _produitQuantity = value!;
+        produitQuantity = value!;
       },
     );
   }
@@ -653,12 +702,12 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
       isExpanded: true,
       onChanged: (value) {
         setState(() {
-          _produitRecette = value;
+          produitRecette = value;
         });
       },
       onSaved: (value) {
         setState(() {
-          _produitRecette = value;
+          produitRecette = value;
         });
       },
       validator: (String? value) {
@@ -713,12 +762,12 @@ class ModificationProduitState extends ConsumerState<ModificationProduit> {
       isExpanded: true,
       onChanged: (value) {
         setState(() {
-          _produitCategorie = value;
+          produitCategorie = value;
         });
       },
       onSaved: (value) {
         setState(() {
-          _produitCategorie = value;
+          produitCategorie = value;
         });
       },
       validator: (String? value) {

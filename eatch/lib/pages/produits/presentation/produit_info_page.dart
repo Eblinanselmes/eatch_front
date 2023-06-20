@@ -17,6 +17,9 @@ import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class Produitpage extends ConsumerStatefulWidget {
+  const Produitpage({super.key});
+
+class Produitpage extends ConsumerStatefulWidget {
   const Produitpage({
     super.key,
     required this.title,
@@ -56,6 +59,11 @@ class _ProduitpageState extends ConsumerState<Produitpage> {
     return size(buildContext).height;
   }
 
+  @override
+  ConsumerState<Produitpage> createState() => _ProduitpageState();
+}
+
+class _ProduitpageState extends ConsumerState<Produitpage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -494,6 +502,7 @@ class _ProduitpageState extends ConsumerState<Produitpage> {
   }
 
   Future dialogDelete(BuildContext context, String productName, productId) {
+  Future dialogDelete(BuildContext context, String productName, productId) {
     return showDialog(
       context: context,
       builder: (_) {
@@ -533,6 +542,10 @@ class _ProduitpageState extends ConsumerState<Produitpage> {
                   Navigator.of(context, rootNavigator: true).pop();
                   deleteProduct(context, productId);
                 },
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  deleteProduct(context, productId);
+                },
                 label: const Text("Supprimer."),
               )
             ],
@@ -541,6 +554,7 @@ class _ProduitpageState extends ConsumerState<Produitpage> {
                 color: Colors.white,
                 height: 150,
                 child: Text(
+                  "Voulez vous supprimer le produit $productName ?",
                   "Voulez vous supprimer le produit $productName ?",
                   style: const TextStyle(
                     color: Colors.black,

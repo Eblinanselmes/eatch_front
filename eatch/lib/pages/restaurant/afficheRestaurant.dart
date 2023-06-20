@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'dart:typed_data';
 import 'package:eatch/pages/restaurant/detailRestaurant.dart';
 import 'package:eatch/servicesAPI/multipart.dart';
@@ -993,7 +992,7 @@ class RestaurantAfficheState extends ConsumerState<RestaurantAffiche> {
         //finishWorking();
 
         showTopSnackBar(
-          Overlay.of(contextt)!,
+          Overlay.of(contextt),
           const CustomSnackBar.info(
             backgroundColor: Colors.green,
             message: "Restaurant Modifié",
@@ -1002,7 +1001,7 @@ class RestaurantAfficheState extends ConsumerState<RestaurantAffiche> {
         ref.refresh(getDataRsetaurantFuture);
       } else {
         showTopSnackBar(
-          Overlay.of(contextt)!,
+          Overlay.of(contextt),
           const CustomSnackBar.info(
             backgroundColor: Colors.red,
             message: "Erreur de création",
@@ -1035,7 +1034,7 @@ class RestaurantAfficheState extends ConsumerState<RestaurantAffiche> {
       print(response.statusCode);
       if (response.statusCode == 200) {
         showTopSnackBar(
-          Overlay.of(contextt)!,
+          Overlay.of(contextt),
           const CustomSnackBar.info(
             backgroundColor: Colors.green,
             message: "Restaurant supprimé",
@@ -1045,7 +1044,7 @@ class RestaurantAfficheState extends ConsumerState<RestaurantAffiche> {
         return response;
       } else {
         showTopSnackBar(
-          Overlay.of(contextt)!,
+          Overlay.of(contextt),
           const CustomSnackBar.info(
             backgroundColor: Colors.red,
             message: "Erreur de suppression",

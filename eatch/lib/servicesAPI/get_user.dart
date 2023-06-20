@@ -53,6 +53,9 @@ class GetDataUserFuture extends ChangeNotifier {
             } else if (data[i]['role'] == 'LABORANTIN') {
               listLaborantin.add(User.fromJson(data[i]));
             }
+            // else if (data[i]['role'] == data['role']) {
+            //    listComptable.add(User.fromJson(data[i]));
+            // }
           }
         }
       } else {

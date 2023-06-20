@@ -1594,6 +1594,7 @@ class _RecettesPageState extends ConsumerState<RecettesPage> {
   Widget verticalView(double height, double width, context) {
     final viewModel = ref.watch(getDataCategoriesFuture);
     final viewRecetteModel = ref.watch(recette.getDataRecettesFuture);
+    final viewRecetteModel = ref.watch(recette.getDataRecettesFuture);
     return AppLayout(
       content: Container(),
     );
@@ -1672,8 +1673,10 @@ class _RecettesPageState extends ConsumerState<RecettesPage> {
           ),
         );
         ref.refresh(recette.getDataRecettesFuture);
+        ref.refresh(recette.getDataRecettesFuture);
       } else {
         showTopSnackBar(
+          Overlay.of(contextt),
           Overlay.of(contextt),
           const CustomSnackBar.info(
             backgroundColor: Colors.red,
@@ -1770,6 +1773,7 @@ class _RecettesPageState extends ConsumerState<RecettesPage> {
 
       print(response.statusCode);
       if (response.statusCode == 200) {
+        ref.refresh(recette.getDataRecettesFuture);
         ref.refresh(recette.getDataRecettesFuture);
 
         return response;

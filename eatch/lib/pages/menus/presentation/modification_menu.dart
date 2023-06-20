@@ -413,7 +413,7 @@ class ModificationMenuState extends ConsumerState<ModificationMenu> {
                             setState(
                               () {
                                 produit = value!;
-                                print('Valeur : ${produit}');
+                                print('Valeur : $produit');
                                 ////////////////////////////
 
                                 for (int j = 0; j < listProduits.length; j++) {

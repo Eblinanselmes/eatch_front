@@ -134,7 +134,7 @@ class RestaurantAccueilState extends ConsumerState<RestaurantAccueil> {
                         width: MediaQuery.of(context).size.width / 2,
                         alignment: Alignment.center,
                         child: viewModel.listRsetaurant.isEmpty
-                            ? Center(
+                            ? const Center(
                                 child: Text('PAS DE RESTAURANT'),
                               )
                             : ListView.builder(
