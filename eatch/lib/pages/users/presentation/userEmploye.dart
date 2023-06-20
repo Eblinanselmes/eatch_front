@@ -1,11 +1,16 @@
+import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:eatch/servicesAPI/get_user.dart';
 import 'package:eatch/utils/palettes/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import 'modification_user.dart';
+import 'package:http/http.dart' as http;
 
 class EmployerUsers extends ConsumerStatefulWidget {
   const EmployerUsers({
@@ -85,10 +90,10 @@ class EmployerUsersState extends ConsumerState<EmployerUsers> {
               ),
             ),
           ),
-          Card(
+          const Card(
             child: SizedBox(
               height: 50,
-              child: Row(children: const [
+              child: Row(children: [
                 Expanded(
                     child: Center(
                   child: Text(
@@ -249,8 +254,11 @@ class EmployerUsersState extends ConsumerState<EmployerUsers> {
                                           color: Palette.deleteColors,
                                         ),
                                         onPressed: () {
-                                          dialogDelete(viewModel
-                                              .listEmploye[index].lastName!);
+                                          dialogDelete(
+                                              viewModel.listComptable[index]
+                                                  .lastName!,
+                                              viewModel
+                                                  .listComptable[index].sId);
                                         },
                                       ))
                                     ],
@@ -362,7 +370,9 @@ class EmployerUsersState extends ConsumerState<EmployerUsers> {
                                         ),
                                         onPressed: () {
                                           dialogDelete(
-                                              UserSearch[index].lastName!);
+                                            UserSearch[index].lastName!,
+                                            UserSearch[index].sId,
+                                          );
                                         },
                                       ))
                                     ],
@@ -379,10 +389,10 @@ class EmployerUsersState extends ConsumerState<EmployerUsers> {
     );
   }
 
-  Future dialogDelete(String userName) {
+  Future dialogDelete(String userName, id) {
     return showDialog(
         context: context,
-        builder: (_) {
+        builder: (con) {
           return AlertDialog(
               backgroundColor: Colors.white,
               title: const Center(
@@ -416,7 +426,10 @@ class EmployerUsersState extends ConsumerState<EmployerUsers> {
                   ),
                   style: ElevatedButton.styleFrom(
                       backgroundColor: Palette.deleteColors),
-                  onPressed: () {},
+                  onPressed: () {
+                    deleteUser(context, id);
+                    Navigator.pop(con);
+                  },
                   label: const Text("Supprimer."),
                 )
               ],
@@ -431,5 +444,46 @@ class EmployerUsersState extends ConsumerState<EmployerUsers> {
                     ),
                   )));
         });
+  }
+
+  Future<http.Response> deleteUser(BuildContext context, String id) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var userdelete = prefs.getString('IdUser').toString();
+      var token = prefs.getString('token');
+      String urlDelete = "http://13.39.81.126:4001/api/users/delete/$id";
+      var json = {
+        '_creator': userdelete,
+      };
+      var body = jsonEncode(json);
+
+      final http.Response response = await http.delete(
+        Uri.parse(urlDelete),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          'Accept': 'application/json',
+          'authorization': 'Bearer $token',
+          'body': body,
+        },
+      );
+
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.success(
+            backgroundColor: Colors.green,
+            message: "Utilisateur supprimé avec succès",
+          ),
+        );
+        ref.refresh(getDataUserFuture);
+
+        return response;
+      } else {
+        return Future.error("Server Error");
+      }
+    } catch (e) {
+      return Future.error(e);
+    }
   }
 }

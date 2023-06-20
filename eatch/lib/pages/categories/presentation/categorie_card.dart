@@ -69,7 +69,7 @@ class CategorieCardState extends ConsumerState<CategorieCard> {
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 6.0,
-                            vertical: 8.0,
+                            vertical: 6.0,
                           ),
                           decoration: BoxDecoration(
                             borderRadius: const BorderRadius.all(
@@ -79,14 +79,12 @@ class CategorieCardState extends ConsumerState<CategorieCard> {
                                 ? Palette.secondaryColor
                                 : Palette.fourthColor,
                           ),
-                          child: const Icon(Icons.ac_unit),
-                          // child: SvgPicture.asset(
-                          //   widget.categorie.image!,
-                          //   width: 18.0,
-                          //   color: (widget.selectedIndex == widget.index)
-                          //       ? Palette.primaryBackgroundColor
-                          //       : Palette.primaryColor,
-                          // ),
+                          child: Icon(
+                            Icons.ac_unit,
+                            color: (widget.selectedIndex == widget.index)
+                                ? Palette.primaryBackgroundColor
+                                : Palette.primaryColor,
+                          ),
                         ),
                         const SizedBox(width: 05.0),
                         Expanded(

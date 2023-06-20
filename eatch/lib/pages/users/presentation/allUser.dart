@@ -8,6 +8,8 @@ import 'package:eatch/utils/palettes/palette.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 import 'modification_user.dart';
 
@@ -520,7 +522,7 @@ class AllUsersState extends ConsumerState<AllUsers> {
                   color: Colors.white,
                   height: 150,
                   child: Text(
-                    "Voulez vous supprimer l'utilisateur $userName? et $id",
+                    "Voulez vous supprimer l'utilisateur $userName?",
                     style: const TextStyle(
                       color: Colors.black,
                     ),
@@ -551,6 +553,13 @@ class AllUsersState extends ConsumerState<AllUsers> {
 
       print(response.statusCode);
       if (response.statusCode == 200) {
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.success(
+            backgroundColor: Colors.green,
+            message: "Utilisateur supprimé avec succès",
+          ),
+        );
         ref.refresh(getDataUserFuture);
 
         return response;

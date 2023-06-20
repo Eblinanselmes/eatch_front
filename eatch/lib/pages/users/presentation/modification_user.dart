@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:eatch/servicesAPI/getLabo.dart';
 import 'package:eatch/servicesAPI/getRestaurant.dart';
-import 'package:eatch/servicesAPI/get_role.dart';
 import 'package:eatch/servicesAPI/multipart.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -11,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 import '../../../servicesAPI/get_user.dart';
 import '../../../utils/applayout.dart';
 import '../../../utils/default_button/default_button.dart';
@@ -180,10 +181,10 @@ class _ModificationUserState extends ConsumerState<ModificationUser> {
                       const SizedBox(height: 20),
                       widget.role == 'SUPER_ADMIN'
                           ? Container()
-                          : Container(
+                          : SizedBox(
                               height: 100,
                               child: Column(children: [
-                                Container(
+                                SizedBox(
                                   height: 50,
                                   width: 350,
                                   child: Row(
@@ -896,20 +897,31 @@ class _ModificationUserState extends ConsumerState<ModificationUser> {
           ref.refresh(getDataUserFuture);
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Utilisateur crée"),
-        ));
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.success(
+            backgroundColor: Colors.green,
+            message: "Utilisateur modifié avec succès",
+          ),
+        );
+        Navigator.pop(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Erreur de serveur"),
-        ));
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.error(
+            backgroundColor: Colors.red,
+            message: "Erreur de serveur",
+          ),
+        );
         print("Error Create Programme  !!!");
       }
     } catch (e) {
       rethrow;
     }
   }
+}
 
+/*
   void saveNewRole() {
     setState(() {
       _roleController.clear();
@@ -981,17 +993,28 @@ class _ModificationUserState extends ConsumerState<ModificationUser> {
         await response.stream.bytesToString().then((value) {
           print(value);
         });
+
         setState(() {
           ref.refresh(getDataRoleFuture);
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Utilisateur crée"),
-        ));
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.success(
+            backgroundColor: Colors.green,
+            message: "Utilisateur modifié avec succès",
+          ),
+        );
+        Navigator.pop(context);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Erreur de serveur"),
-        ));
+        showTopSnackBar(
+          Overlay.of(context),
+          const CustomSnackBar.error(
+            backgroundColor: Colors.red,
+            message: "Erreur de serveur",
+          ),
+        );
+
         print("Error Create Programme  !!!");
       }
     } catch (e) {
@@ -1102,7 +1125,7 @@ class MyButton extends StatelessWidget {
     );
   }
 }
-
+*/
 class CustomSurffixIcon extends StatelessWidget {
   const CustomSurffixIcon({
     Key? key,

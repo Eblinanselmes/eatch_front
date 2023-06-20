@@ -289,10 +289,11 @@ class _ModificationCategorieState extends ConsumerState<ModificationCategorie> {
           Overlay.of(contextt),
           const CustomSnackBar.info(
             backgroundColor: Colors.green,
-            message: "Restaurant Modifié",
+            message: "Catégorie Modifié avec succès",
           ),
         );
         ref.refresh(getDataCategoriesFuture);
+        Navigator.pop(context);
       } else {
         showTopSnackBar(
           Overlay.of(contextt),
